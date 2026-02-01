@@ -56,3 +56,16 @@ Thumbs.db
 
 # Dataset gốc (đã nén)
 data/*.csv
+
+# =========================
+# Model files (large files)
+# =========================
+*.pth
+*.pt
+# Dataset & model weights
+data/*.zip
+*.zip
+*.pt
+*.pth
+*.h5
+

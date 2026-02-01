@@ -15,19 +15,23 @@ Hệ thống bao gồm:
 ## 🧠 Kiến trúc tổng thể
 
 ```
-Dataset (.csv)
+Raw Dataset
    ↓
 Text Preprocessing
    ↓
-Tokenization (RoBERTa)
+Tokenization (RoBERTa Tokenizer)
    ↓
-Model Training
+Deep Learning Model (RoBERTa + Classification Head)
    ↓
-Save model (.pth)
+Model Training & Evaluation
    ↓
-Flask Backend
+Saved Model Weights
    ↓
-Web UI Prediction
+Flask Backend API
+   ↓
+Web Interface (HTML/CSS)
+   ↓
+Prediction Result
 ```
 
 ---
@@ -37,63 +41,50 @@ Web UI Prediction
 ```text
 fake-classifier/
 │
-├── data/
-│   └── Final_enhanced_dataset.csv      # Dataset
+├── data/                              
+│   └── Final_enhanced_dataset.*      # Dataset huấn luyện
 │
 ├── static/
 │   ├── robot.png                      
-│   └── style.css                       # CSS cho web
+│   └── style.css                     # CSS cho web
 │
 ├── templates/
-│   └── index.html                      # Giao diện web (Flask + Jinja2)
+│   └── index.html                    # Giao diện web (Flask + Jinja2)
 │
-├── app.py                              # Flask app – chạy web demo
-├── backend.py                          # Xử lý logic dự đoán
-├── model.py                            # Định nghĩa kiến trúc mô hình
-├── model_weights.pth                   # Trọng số mô hình đã huấn luyện
+├── app.py                            # Flask app – chạy web demo
+├── backend.py                        # Xử lý logic dự đoán
+├── model.py                          # Định nghĩa kiến trúc mô hình
 │
-├── train_model.ipynb                   # Huấn luyện mô hình
-├── requirements.txt                    # Danh sách thư viện cần cài đặt
-└── venv/                               # Môi trường ảo
+├── train_model.ipynb                 # Huấn luyện mô hình
+├── requirements.txt                  # Danh sách thư viện cần cài đặt
+├── .gitignore                        
+└── README.md                         # Mô tả dự án
 ```
 
 ---
 
-## 📊 Dataset
+## Tải dữ liệu
 
-* File: `data/Final_enhanced_dataset.csv`
-* Bao gồm:
+Tải dataset gốc từ Kaggle:
+https://www.kaggle.com/datasets/harshdecipher/amazon-enhanced-fake-reviews-datasets
 
-  * Văn bản đánh giá sản phẩm (review text)
-  * Nhãn phân loại: **Fake / Genuine**
-* Dataset đã được:
+Sau khi xử lý, đặt file dataset vào thư mục:
 
-  * Làm sạch
-  * Chuẩn hóa
-  * Cân bằng và tăng cường dữ liệu (enhanced)
+data/Final_enhanced_dataset.csv
 
----
+## Tải Model Weights (nếu cần)
+Nếu bạn không muốn huấn luyện mô hình từ đầu bằng file **train_model.ipynb** bạn cần tải file model đã huấn luyện sẵn (model_weights.pth)
+Đặt file model weights vào thư mục gốc của dự án:
 
-## 🌐 Web Demo (Flask)
+fake-classifier/
+├── model_weights.pth
+├── app.py
+├── backend.py
+├── model.py
 
-### Chức năng
+Tải từ link: 
+https://drive.google.com/file/d/1U_RAiJ0BL54ppXmSJbnj_o3G5oow0lz8/view?usp=sharing
 
-* Nhập nội dung review
-* Model dự đoán:
-
-  * Fake Review ❌
-  * Genuine Review ✅
-* Hiển thị kết quả trực tiếp trên giao diện web
-
-### Luồng hoạt động
-
-```text
-User Input → Flask (app.py)
-          → backend.py
-          → model.py + model_weights.pth
-          → Prediction
-          → Render index.html
-```
 
 ---
 

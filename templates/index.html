@@ -11,7 +11,7 @@
     <h2 class="sidebar-title">Fraudulent Review<br/>Detection<br/>System</h2>
 
     <div class="robot-container">
-        <div class="chat-bubble" id="robot-msg">Hãy nhập review để mình phân biệt giúp nhé! Mình sẽ nhận diện nhanh thôi!</div>
+        <div class="chat-bubble" id="robot-msg">Enter a review and I’ll quickly analyze it for you!</div>
         <img src="/static/robot.png" class="robot-img" alt="AI Robot">
         <div class="robot-shadow"></div>
     </div>
@@ -132,7 +132,7 @@ function analyze(){
     if(!reviewText.trim()) return;
 
     const msg = document.getElementById('robot-msg');
-    msg.innerText = "Đang kiểm tra, chờ mình xíu...";
+    msg.innerText = "Checking now, please hang on a moment…";
     
     fetch('/analyze', {
         method: 'POST',
@@ -159,12 +159,12 @@ function analyze(){
             finalLabel = "FAKE REVIEW";
             badge.innerText = finalLabel;
             badge.style.background = "#c0392b"; // Màu đỏ
-            msg.innerText = "Cảnh báo! Đây có thể là tin giả.";
+            msg.innerText = "Warning! This review might be fake.";
         } else {
             finalLabel = "REAL REVIEW";
             badge.innerText = finalLabel;
             badge.style.background = "#2ecc71"; // Màu xanh
-            msg.innerText = "Tin này có vẻ rất thật đấy!";
+            msg.innerText = "Good news! This seems like a real review.";
         }
         // ------------------------------
 
