@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Fraudulent Review Detection System</title>
+    <link rel="stylesheet" href="/static/style.css?v=1.1">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2 class="sidebar-title">Fraudulent Review<br/>Detection<br/>System</h2>
+
+    <div class="robot-container">
+        <div class="chat-bubble" id="robot-msg">Hãy nhập review để mình phân biệt giúp nhé! Mình sẽ nhận diện nhanh thôi!</div>
+        <img src="/static/robot.png" class="robot-img" alt="AI Robot">
+        <div class="robot-shadow"></div>
+    </div>
+</div>
+
+<div class="main">
+    <h2 class="main-header">Fraudulent Review Detection</h2>
+
+    <div class="card">
+        <h3>Enter product review text</h3>
+        <textarea id="review" placeholder="Enter review text here..."></textarea>
+
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Category</label>
+                <input type="text" id="category" value="Home_and_Kitchen">
+            </div>
+
+            <div class="input-group">
+                <label>Rating</label>
+                <select id="rating">
+                    <option value="5" selected>5 ★★★★★</option>
+                    <option value="4">4 ★★★★</option>
+                    <option value="3">3 ★★★</option>
+                    <option value="2">2 ★★</option>
+                    <option value="1">1 ★</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn" onclick="analyze()">Analyze Review</button>
+    </div>
+
+    <!--  -->
+<div class="bottom-grid">
+    <div class="card result-card dashed-border">
+        <div class="result-title-container">
+            <span class="result-label-box">RESULT</span>
+        </div>
+        <div class="result-display">
+            <div class="badge" id="badge">---</div>
+            <p id="resultText" class="prob-text">Waiting for analysis...</p>
+        </div>
+    </div>
+
+    <div class="card history-card">
+        <div class="history-header">
+            <h3 class="history-title">HISTORY</h3>
+            <button class="btn-clear" onclick="clearHistory()">Clear</button>
+        </div>
+        <div class="history-list-container">
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Review</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Hàm lưu vào LocalStorage
+function saveToHistory(text, label, f_prob, r_prob) {
+    let history = JSON.parse(localStorage.getItem('search_history')) || [];
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
+                    now.getMinutes().toString().padStart(2, '0') + " " + 
+                    (now.getHours() >= 12 ? 'PM' : 'AM');
+
+    const newItem = {
+        time: timeStr,
+        snippet: text.length > 40 ? text.substring(0, 40) + "..." : text,
+        fullText: text,
+        label: label,
+        percent: label.includes("FAKE") ? f_prob : r_prob
+    };
+
+    history.unshift(newItem); // Thêm vào đầu danh sách
+    localStorage.setItem('search_history', JSON.stringify(history.slice(0, 10))); // Lưu 10 mục
+    renderHistory();
+}
+
+// Hàm hiển thị danh sách
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('search_history')) || [];
+    const body = document.getElementById('historyBody');
+    body.innerHTML = history.map((item, index) => `
+        <tr>
+            <td style="color:#999; font-size:12px;">${item.time}</td>
+            <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.snippet}</td>
+            <td>
+                <span class="mini-badge ${item.label.includes('FAKE') ? 'bg-red' : 'bg-green'}">
+                    ${item.label}
+                </span>
+            </td>
+            
+        </tr>
+    `).join('');
+}
+
+function clearHistory() {
+    localStorage.removeItem('search_history');
+    renderHistory();
+}
+
+// Chạy khi trang web vừa load
+document.addEventListener('DOMContentLoaded', renderHistory);
+
+// Cập nhật hàm analyze hiện tại của bạn
+function analyze(){
+    const reviewText = document.getElementById('review').value;
+    if(!reviewText.trim()) return;
+
+    const msg = document.getElementById('robot-msg');
+    msg.innerText = "Đang kiểm tra, chờ mình xíu...";
+    
+    fetch('/analyze', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+            text: reviewText,
+            category: document.getElementById('category').value,
+            rating: document.getElementById('rating').value
+        })
+    })
+    .then(r => r.json())
+    .then(d => {
+        const badge = document.getElementById('badge');
+        
+        // --- CHỈNH SỬA LOGIC TẠI ĐÂY ---
+        // Ép kiểu về số thực để so sánh chính xác
+        const fProb = parseFloat(d.fake_prob);
+        const rProb = parseFloat(d.real_prob);
+        
+        let finalLabel = "";
+
+        // So sánh trực tiếp: Cái nào lớn hơn thì hiển thị nhãn đó
+        if (fProb > rProb) {
+            finalLabel = "FAKE REVIEW";
+            badge.innerText = finalLabel;
+            badge.style.background = "#c0392b"; // Màu đỏ
+            msg.innerText = "Cảnh báo! Đây có thể là tin giả.";
+        } else {
+            finalLabel = "REAL REVIEW";
+            badge.innerText = finalLabel;
+            badge.style.background = "#2ecc71"; // Màu xanh
+            msg.innerText = "Tin này có vẻ rất thật đấy!";
+        }
+        // ------------------------------
+
+        document.getElementById('resultText').innerText = `Fake: ${fProb}% | Real: ${rProb}%`;
+        
+        // LƯU LỊCH SỬ với nhãn đã được chuẩn hóa
+        saveToHistory(reviewText, finalLabel, fProb, rProb);
+    })
+    .catch(err => {
+        msg.innerText = "Có lỗi xảy ra rồi!";
+        console.error(err);
+    });
+}</script>

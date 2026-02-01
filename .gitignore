@@ -1,0 +1,58 @@
+# =========================
+# Python cache
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# Virtual environment
+# =========================
+venv/
+.env/
+.env.*
+
+# =========================
+# Jupyter Notebook
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Flask / runtime
+# =========================
+instance/
+.webassets-cache
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs & temporary files
+# =========================
+*.log
+*.tmp
+
+# =========================
+# Data (KHÔNG ignore file CSV hiện tại)
+# =========================
+# data/raw/
+# data/processed/
+
+# =========================
+# Model files
+# =========================
+# KHÔNG ignore vì cần deploy web
+# model_weights.pth
+
+# Dataset gốc (đã nén)
+data/*.csv
