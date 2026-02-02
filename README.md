@@ -83,8 +83,7 @@ fake-classifier/
 ├── model.py
 
 Tải từ link: 
-https://drive.google.com/file/d/1U_RAiJ0BL54ppXmSJbnj_o3G5oow0lz8/view?usp=sharing
-
+https://drive.google.com/file/d/1J_UsUxn_B4X8PqSb88xil8bBfjzYNdQW/view?usp=sharing 
 
 ---
 
